@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI and Health Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .result, .risk-result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BMI and Health Assessment Program</h1>
+        
+        <form id="bmiForm">
+            <label for="weight">Weight:</label>
+            <input type="number" id="weight" required>
+            <select id="weightUnit">
+                <option value="kg">Kilograms (kg)</option>
+                <option value="lbs">Pounds (lbs)</option>
+            </select>
+
+            <label for="height">Height:</label>
+            <input type="number" id="height" required>
+            <select id="heightUnit">
+                <option value="m">Meters (m)</option>
+                <option value="cm">Centimeters (cm)</option>
+                <option value="in">Inches (in)</option>
+            </select>
+
+            <label for="workoutFrequency">Workout Frequency (days/week):</label>
+            <input type="number" id="workoutFrequency" min="0" max="7" required>
+
+            <button type="submit">Calculate BMI</button>
+        </form>
+
+        <div id="result" class="result"></div>
+        <button id="riskAssessmentButton">Health Risk Assessment</button>
+        <div id="riskResult" class="risk-result"></div>
+    </div>
+
+    <script>
+        document.getElementById("bmiForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const weight = parseFloat(document.getElementById("weight").value);
+            const weightUnit = document.getElementById("weightUnit").value;
+            const height = parseFloat(document.getElementById("height").value);
+            const heightUnit = document.getElementById("heightUnit").value;
+            const workoutFrequency = parseInt(document.getElementById("workoutFrequency").value);
+
+            let weightInKg = weight;
+            if (weightUnit === "lbs") {
+                weightInKg *= 0.453592; // Convert pounds to kg
+            }
+
+            let heightInMeters = height;
+            if (heightUnit === "cm") {
+                heightInMeters /= 100; // Convert cm to m
+            } else if (heightUnit === "in") {
+                heightInMeters *= 0.0254; // Convert inches to m
+            }
+
+            const bmi = weightInKg / (heightInMeters * heightInMeters);
+            let result = Your BMI is: ${bmi.toFixed(2)}\n;
+
+            let dailyCalories, workoutType, nutrientFocus;
+
+            if (bmi < 18.5) {
+                result += "You are classified as Underweight.\n";
+                dailyCalories = 3000;
+                workoutType = "Weight lifting, 3-4 times a week, 45-60 minutes.";
+                nutrientFocus = "High protein (1.5-2.0g/kg), healthy fats, and complex carbohydrates.";
+            } else if (bmi >= 18.5 && bmi < 24.9) {
+                result += "You are classified as Normal weight.\n";
+                dailyCalories = 2500;
+                workoutType = "Combination of cardio and strength training, 4-5 times a week, 30-45 minutes.";
+                nutrientFocus = "Balanced intake of protein, carbohydrates, and healthy fats.";
+            } else if (bmi >= 25 && bmi < 29.9) {
+                result += "You are classified as Overweight.\n";
+                dailyCalories = 2200;
+                workoutType = "Cardio (running, cycling) and strength training, 5-6 times a week, 45-60 minutes.";
+                nutrientFocus = "Moderate protein, lower carbohydrates, and healthy fats.";
+            } else {
+                result += "You are classified as Obese.\n";
+                dailyCalories = 2000;
+                workoutType = "Low-impact cardio and strength training, 5-6 times a week, starting with 30-45 minutes.";
+            }
+
+            result += Daily Calorie Intake: ~${dailyCalories} calories\n;
+            result += Workout Type: ${workoutType}\n;
+            result += Nutrient Focus: ${nutrientFocus}\n;
+            document.getElementById("result").innerText = result;
+        });
+
+        // Health Risk Assessment
+        document.getElementById("riskAssessmentButton").addEventListener("click", function() {
+            let riskScore = 0;
+            const questions = [
+                "Do you smoke? (yes/no)",
+                "Do you have a family history of heart disease? (yes/no)",
+                "Do you exercise regularly? (yes/no)",
+                "Do you have high blood pressure? (yes/no)",
+                "Do you have diabetes? (yes/no)"
+            ];
+
+            questions.forEach(question => {
+                const answer = prompt(question);
+                if (answer && answer.toLowerCase() === "yes") {
+                    riskScore++;
+                }
+            });
+
+            let riskResult = "Health Risk Assessment Results:\n";
+            if (riskScore === 0) {
+                riskResult += "Low risk. Keep maintaining a healthy lifestyle!";
+            } else if (riskScore <= 2) {
+                riskResult += "Moderate risk. Consider making some lifestyle changes.";
+            } else {
+                riskResult += "High risk. It's advisable to consult a healthcare professional.";
+            }
+
+            document.getElementById("riskResult").innerText = riskResult;
+        });
+    </script>
+</body>
+</html>
